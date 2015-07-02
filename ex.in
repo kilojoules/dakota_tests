@@ -1,0 +1,20 @@
+method,						
+	optpp_newton				#2,#3
+	  max_iterations = 50			
+	  convergence_tolerance = 1e-4
+
+variables,					
+	continuous_design = 2			
+	  cdv_initial_point  -1.2  1.0		
+	  cdv_lower_bounds   -2.0 -2.0		
+	  cdv_upper_bounds    2.0  2.0		
+	  cdv_descriptor      'x1' 'x2'
+
+interface,							
+	python							
+	  analysis_drivers = 'funk:rosenbrock_list'				
+
+responses,				
+	num_objective_functions = 1	
+	analytic_gradients		
+	analytic_hessians			#2,#3
