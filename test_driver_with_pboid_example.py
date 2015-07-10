@@ -10,10 +10,10 @@ class OptimizationUnconstrained(Assembly):
 
         # Create Optimizer instance
         driver_object = dakota_driver.driver.pydakdriver()
-        driver_object.Parameter_Study()
-        driver_object.final_point = [20,20]
-        driver_object.num_steps = 10
-        driver_object.stdout = 'kilojoulesdakota.out'
+        driver_object.Optimization()
+        #driver_object.numerical_gradients()
+        #driver_object.final_point = [20,20]
+        #driver_object.num_steps = 10
         self.add('driver', driver_object)
 
         # Create Paraboloid component instances
