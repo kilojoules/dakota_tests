@@ -1,5 +1,5 @@
-def get_lcoe():
-    with open('dakota.out') as dak:
+def get_lcoe(location):
+    with open(location) as dak:
         daklines = dak.readlines()
 
     # read data
@@ -9,8 +9,8 @@ def get_lcoe():
         else: 
            split_line = line.split()
            if len(split_line)==2:
-               if split_line[1] not in vals: vals[split_line[1]] = [split_line[0]]
-               else:vals[split_line[1]].append(split_line[0])
+               if split_line[1] not in vals: vals[split_line[1]] = [float(split_line[0])]
+               else:vals[split_line[1]].append(float(split_line[0]))
     return vals['lcoe_se.coe']
 # return lcoe
 # write data
