@@ -640,21 +640,16 @@ if __name__ == '__main__':
                    lcoe_vals = dakota_parser.get_lcoe('dakota_mA'+str(_mean_A)+'_sA'+str( _std_A)+'_mk'+str(_mean_K)+'_sK'+str( _std_K)+'.out')
                
                    # check which percentile lcoe threshold is
+                   perc_05 = perc_08 = perc_10 = perc_15 = None
                    for tile in np.arange(0,100,0.01):
-                      if np.percentile(lcoe_vals,tile)>0.05:
+                      if np.percentile(lcoe_vals,tile)>0.05 and not perc_05:
                           perc_05 = tile
-                      if np.percentile(lcoe_vals,tile)>0.08:
+                      if np.percentile(lcoe_vals,tile)>0.08 and not perc_08:
                           perc_08 = tile
-                      if np.percentile(lcoe_vals,tile)>0.10:
+                      if np.percentile(lcoe_vals,tile)>0.10 and not perc_10:
                           perc_10 = tile
-                      if np.percentile(lcoe_vals,tile)>0.15:
+                      if np.percentile(lcoe_vals,tile)>0.15 and not perc_15:
                           perc_15 = tile
-                          break
-                   else: 
-                          perc_05 = 'NA'
-                          perc_08 = 'NA'
-                          perc_10 = 'NA'
-                          perc_15 = 'NA'
                    print ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, np.percentile(lcoe_vals,50), np.percentile(lcoe_vals,90), np.percentile(lcoe_vals,99), perc_05, perc_08, perc_10, perc_15, np.std(lcoe_vals)]])
                    print>>outfile, ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, np.percentile(lcoe_vals,50), np.percentile(lcoe_vals,90), np.percentile(lcoe_vals,99), perc_05, perc_08, perc_10, perc_15, np.std(lcoe_vals)]])
                    outfile.flush()
