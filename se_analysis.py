@@ -623,8 +623,8 @@ if __name__ == '__main__':
     import dakota_parser
 
     outfile = open('sampling_probspace.csv','w')
-    print 'std_A, std_K, mean_A, mean_k, percentile'
-    print >>outfile, 'std_A, std_K, mean_A, mean_k, percentile, 50th percentile'
+    print 'std_A, std_K, mean_A, mean_k, p50, p90, p99, percentile for 0.05 coe, percentile for 0.08 coe, percentile for 0.10 coe, percentile for 0.15 coe, standard deviation'
+    print >>outfile, 'std_A, std_K, mean_A, mean_k, p50, p90, p99, percentile for 0.05 coe, percentile for 0.08 coe, percentile for 0.10 coe, percentile for 0.15 coe, standard deviation'
     _threshold_lcoe = 0.14 #0.185 before
     for std_a_i in [0.05, 0.5, 1]:
        _std_A = std_a_i 
@@ -641,13 +641,24 @@ if __name__ == '__main__':
                
                    # check which percentile lcoe threshold is
                    for tile in np.arange(0,100,0.01):
-                      if np.percentile(lcoe_vals,tile)>_threshold_lcoe:
-                          perc = tile
+                      if np.percentile(lcoe_vals,tile)>0.05:
+                          perc_05 = tile
+                      if np.percentile(lcoe_vals,tile)>0.08:
+                          perc_08 = tile
+                      if np.percentile(lcoe_vals,tile)>0.10:
+                          perc_10 = tile
+                      if np.percentile(lcoe_vals,tile)>0.15:
+                          perc_15 = tile
                           break
-                   else: perc = 'NA'
-                   print ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, perc, np.percentile(lcoe_vals,50)]])
-                   print>>outfile, ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, perc, np.percentile(lcoe_vals,50)]])
-
+                   else: 
+                          perc_05 = 'NA'
+                          perc_08 = 'NA'
+                          perc_10 = 'NA'
+                          perc_15 = 'NA'
+                   print ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, np.percentile(lcoe_vals,50), np.percentile(lcoe_vals,90), np.percentile(lcoe_vals,99), perc_05, perc_08, perc_10, perc_15, np.std(lcoe_vals)]])
+                   print>>outfile, ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, np.percentile(lcoe_vals,50), np.percentile(lcoe_vals,90), np.percentile(lcoe_vals,99), perc_05, perc_08, perc_10, perc_15, np.std(lcoe_vals)]])
+                   outfile.flush()
+    outfile.close()
     '''# NREL 5 MW in land-based wind plant with high winds (as class I)
     wind_class = 'I'
     sea_depth = 0.0
