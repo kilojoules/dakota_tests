@@ -597,11 +597,11 @@ class lcoe_wind_SA(Assembly):
         # ..using the cutting edge pydakdriver
         dakDriver = pydakdriver()
         dakDriver.UQ()
-        dakDriver.samples = 4
+        dakDriver.samples = 50
         dakDriver.seed = 4723
         driver = self.add('driver',dakDriver)
         driver.workflow.add('lcoe_se')
-        driver.stdout = 'dakota.out'
+        driver.stdout = 'dakota_mA'+str(_mean_A)+'_sA'+str( _std_A)+'_mk'+str(_mean_K)+'_sK'+str( _std_K)+'.out'
         driver.stderr = 'dakota.err'
 
         driver.clear_special_variables()
@@ -622,22 +622,22 @@ class lcoe_wind_SA(Assembly):
 if __name__ == '__main__':
     import dakota_parser
 
-    outfile = 'sampling_probspace.csv'
+    outfile = open('sampling_probspace.csv','w')
     print 'std_A, std_K, mean_A, mean_k, percentile'
-    _threshold_lcoe = 0.1
-    for std_a_i in range(1,4):
-       _std_A = 0.05 * std_a_i
-       for std_k_i in range(1,4):
-           _std_K = 0.05 * std_k_i
+    print >>outfile, 'std_A, std_K, mean_A, mean_k, percentile, 50th percentile'
+    _threshold_lcoe = 0.14 #0.185 before
+    for std_a_i in [0.05, 0.5, 1]:
+       _std_A = std_a_i 
+       for std_k_i in [0.025, 0.05, 0.1]:
+           _std_K = std_k_i
            for a in range(5,10):
                _mean_A = a
                for k in np.arange(1.5,3.25,.25):
-                   _mean_K = 2.15
+                   _mean_K = k
                     
                    top = lcoe_wind_SA()
-                   top.configure()
                    top.run()
-                   lcoe_vals = dakota_parser.get_lcoe()
+                   lcoe_vals = dakota_parser.get_lcoe('dakota_mA'+str(_mean_A)+'_sA'+str( _std_A)+'_mk'+str(_mean_K)+'_sK'+str( _std_K)+'.out')
                
                    # check which percentile lcoe threshold is
                    for tile in np.arange(0,100,0.01):
@@ -645,7 +645,8 @@ if __name__ == '__main__':
                           perc = tile
                           break
                    else: perc = 'NA'
-                   print ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K]])
+                   print ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, perc, np.percentile(lcoe_vals,50)]])
+                   print>>outfile, ', '.join([str(s) for s in [ _std_A, _std_K, _mean_A, _mean_K, perc, np.percentile(lcoe_vals,50)]])
 
     '''# NREL 5 MW in land-based wind plant with high winds (as class I)
     wind_class = 'I'
